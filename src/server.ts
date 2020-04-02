@@ -59,7 +59,7 @@ export class Server {
         this.app.use((error,req,res,next)=>{
             const errorStatus = req.errorSatus || 500;
             res.status(errorStatus).json({
-                message: error.message || "Something went wrong",
+                message : error.message || "Something went wrong",
                 status_code : errorStatus
             })
         })
