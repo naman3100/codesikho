@@ -1,0 +1,4 @@
+node_modules
+src/environments/dev.env.ts
+src/environments/prod.env.ts
+src/utils/NodeMailerApiKey.ts

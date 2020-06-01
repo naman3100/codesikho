@@ -1,4 +1,6 @@
-import  UserRouter  from './router/UserRouter';
+import  UserRouter  from './router/userRouter';
+import PostRouter from './router/postRouter';
+import CommentRouter from './router/CommentRouter';
 import * as express from 'express'
 import * as mongoose from 'mongoose'
 import { getEnvironmentVariables } from './environments/env';
@@ -24,15 +26,14 @@ export class Server {
 
 
     //Connection to mongodb
-    setMongodb(){
-        mongoose.connect(getEnvironmentVariables().db_url,
-    {useNewUrlParser:true, useUnifiedTopology:true})
-    .then(()=>{
-    console.log('mongodb is connected')
-    }).catch((err)=>{
-        console.log('mongodb not connected')
-        console.log(err)
-    })
+    async setMongodb(){
+        try {
+            await mongoose.connect(getEnvironmentVariables().db_url,
+            {useNewUrlParser:true, useUnifiedTopology:true});
+            console.log("Mongodb is connected"); 
+        } catch (error) {
+            console.log("Mongodb not connected");
+        }
     }
 
     //Configuring body parser
@@ -41,10 +42,13 @@ export class Server {
     }
 
     setRoutes(){
+        this.app.use('/src/uploads',express.static('src/uploads'));
         this.app.use('/api/user', UserRouter);
+        this.app.use('/api/post',PostRouter);
+        this.app.use('/api/comment',CommentRouter);
     }
 
-
+    //This is called when the page requested is not there
     error404Handler() {
         this.app.use((req,res)=>{
             res.status(404).json({
@@ -55,6 +59,7 @@ export class Server {
     }
 
     //Handling the errors given by the routes
+    //This is called whenever an errror object is passed within the next() function
     handleErrors(){
         this.app.use((error,req,res,next)=>{
             const errorStatus = req.errorSatus || 500;
